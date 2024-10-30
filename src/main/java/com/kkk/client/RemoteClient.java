@@ -3,35 +3,48 @@ package com.kkk.client;
 import cn.hutool.json.JSONObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kkk.domain.entity.HourForecast;
+import com.kkk.domain.entity.HourWeatherList;
+import com.kkk.utils.HttpUtils;
 import okhttp3.*;
+import org.apache.http.HttpResponse;
+import org.apache.http.util.EntityUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
+
+import static com.kkk.constant.RemoteConstant.*;
+import static com.kkk.key.ApiCode.GET_WEATHER_APPCODE;
 
 /**
  * 调用第三方接口服务端
+ *
  * @author lonelykkk
  * @email 2765314967@qq.com
  * @date 2024/10/27 11:03
  * @Version V1.0
  */
 public class RemoteClient {
-    private static final String TRANSLATION_URL = "https://api.lolimi.cn/API/qqfy/api.php";
-    private static final String AI_CHAT_URL = "https://api.lolimi.cn/API/AI/wx.php";
-    private static final String IMG_CODE_URL = "https://api.lolimi.cn/API/qrcode/api.php";
+
 
     RestTemplate restTemplate = new RestTemplate();
 
     /**
      * 英汉互译
+     *
      * @param msg 输入你需要翻译的内容
      * @return
      */
@@ -54,13 +67,14 @@ public class RemoteClient {
 
     /**
      * 二维码生成接口
-     * @param msg 输入你要填入二维码的信息
+     *
+     * @param msg  输入你要填入二维码的信息
      * @param size 输入二维码的图片大小
      * @return
      */
     public String getImgCode(String msg, Integer size) {
         try {
-            String url = IMG_CODE_URL + "?text=" + msg + "&size="+size+"px";
+            String url = IMG_CODE_URL + "?text=" + msg + "&size=" + size + "px";
             ResponseEntity<Resource> responseEntity = restTemplate.getForEntity(url, Resource.class);
             // 获取响应体中的资源
             Resource resource = responseEntity.getBody();
@@ -72,7 +86,7 @@ public class RemoteClient {
                     Files.createDirectories(resourcePath);
                 }
                 // 创建文件输出流，用于保存图片
-                Path imgPath = resourcePath.resolve(UUID.randomUUID().toString().replace("-","")+".png");
+                Path imgPath = resourcePath.resolve(UUID.randomUUID().toString().replace("-", "") + ".png");
                 InputStream inputStream = resource.getInputStream();
                 FileOutputStream outputStream = new FileOutputStream(imgPath.toFile());
 
@@ -97,13 +111,12 @@ public class RemoteClient {
 
     /**
      * GPT远程调用接口
+     *
      * @param msg 出入你的问题
      * @return
      */
     public String getAiChat(String msg) {
         try {
-
-            String url = "https://api.openai-hk.com/v1/chat/completions";
 
             OkHttpClient client = new OkHttpClient();
 
@@ -122,14 +135,14 @@ public class RemoteClient {
                     "    },\n" +
                     "    {\n" +
                     "      \"role\": \"user\",\n" +
-                    "      \"content\": "+ "\"" + msg + "\"" +"\n" +
+                    "      \"content\": " + "\"" + msg + "\"" + "\n" +
                     "    }\n" +
                     "  ]\n" +
                     "}";
 
             RequestBody body = RequestBody.create(mediaType, json);
             Request request = new Request.Builder()
-                    .url(url)
+                    .url(AI_CHAT_URL)
                     .post(body)
                     .addHeader("Content-Type", "application/json")
                     .addHeader("Authorization", "hk-l0ik8q100004543128fa47fb2113ad7a48be4de270945998")
@@ -155,6 +168,39 @@ public class RemoteClient {
         } catch (IOException e) {
             throw new RuntimeException();
         }
+    }
+
+    /**
+     * 24小时天气查询接口
+     * @param area 输入需要查询的天气地点
+     * @return
+     */
+    public HourWeatherList getWeather(String area) {
+        try {
+
+            String path = "/hour24";
+            String method = "GET";
+            Map<String, String> headers = new HashMap();
+            //最后在header中的格式(中间是英文空格)为Authorization:APPCODE 83359fd73fe94948385f570e3c139105
+            headers.put("Authorization", "APPCODE " + GET_WEATHER_APPCODE);
+            Map<String, String> querys = new HashMap<String, String>();
+            querys.put("area", area);
+            querys.put("areaCode", "areaCode");
+
+            HttpResponse response = HttpUtils.doGet(ALI_WEATHER_HOST, path, method, headers, querys);
+
+            //获取天气列表信息
+            String responseString = EntityUtils.toString(response.getEntity());
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode rootNode = mapper.readTree(responseString);
+            JsonNode showapiResBody = rootNode.get("showapi_res_body");
+
+            HourWeatherList hourWeatherList = mapper.treeToValue(showapiResBody, HourWeatherList.class);
+            return hourWeatherList;
+        } catch (Exception e) {
+            throw new RuntimeException();
+        }
+
     }
 
 }
