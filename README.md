@@ -55,5 +55,109 @@ public static void main(String[] args) {
         System.out.println(translation);  //输出翻译后的结果,为String类型
     }
 ```
+### 4.天气查询接口调用
+> 接口描述
+> 该api可用于查询当前地区24小时内的天气信息，只需要输入你需要查询的天气的地址，便可以返回对应地址的天气24小时的实体对象
+
+> 入门案例
+```java
+public static void main(String[] args) {
+        RemoteClient remoteClient = new RemoteClient();
+        try {
+            HourWeatherList hourWeatherList = remoteClient.getWeather("上海"); //在此处输入你的需要查询的天气的地点
+            // 定义日期格式
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmm");
+            for (HourForecast forecast : hourWeatherList.getHourList()) {
+                // 解析字符串为 Date 对象
+                Date date = dateFormat.parse(forecast.getTime());
+                System.out.println("Time: " + date);
+                System.out.println("Weather: " + forecast.getWeather());
+                System.out.println("Temperature: " + forecast.getTemperature());
+                System.out.println("Wind Direction: " + forecast.getWindDirection());
+                System.out.println("Wind Power: " + forecast.getWindPower());
+                System.out.println("---------------------------");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException();
+        }
+}
+```
+> 响应参数
+```json
+"showapi_res_body": {
+		"ret_code": 0,
+		"area": "上海",//查到的地区名
+		"areaid": "",//查到的地区id
+		"hourList": [//24小时预报列表
+			{
+				"weather_code": "01",//天气编码
+				"time": "201611061000",//预报时间
+				"wind_direction": "东风",//风向
+				"wind_power": "4-5级 8.0~10.7m/s",//风力
+				"weather": "多云",//天气名称
+				"temperature": "21"//温度
+			},
+			{
+				"weather_code": "01",//天气编码
+				"time": "201611060900",//预报时间
+				"wind_direction": "东风",//风向
+				"wind_power": "3-4级 5.5~7.9m/s",//风力
+				"weather": "多云",//天气名称
+				"temperature": "19"//温度
+			}
+            ...24小时的天气一小时为一间隔
+		]
+	}
+```
+> 对应的实体类
+```java
+public class HourWeatherList {
+    @JsonProperty("remark")
+    private String remark;
+
+    @JsonProperty("ret_code")
+    private int retCode;
+
+    @JsonProperty("areaid")
+    private String areaId;
+
+    @JsonProperty("area")
+    private String area;
+
+    @JsonProperty("areaCode")
+    private String areaCode;
+
+    private List<HourForecast> hourList;
+}
+```
+```java
+public class HourForecast {
+    @JsonProperty("time")
+    private String time;
+
+    @JsonProperty("wind_direction")
+    private String windDirection;
+
+    @JsonProperty("wind_power")
+    private String windPower;
+
+    @JsonProperty("areaid")
+    private String areaId;
+
+    @JsonProperty("weather_code")
+    private String weatherCode;
+
+    @JsonProperty("temperature")
+    private String temperature;
+
+    @JsonProperty("area")
+    private String area;
+
+    @JsonProperty("weather")
+    private String weather;
+
+}
+```
+
 ## 第三方接口将持续更新中
 
