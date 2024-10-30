@@ -8,4 +8,5 @@ package com.kkk.key;
  */
 public class ApiCode {
     public static final String GET_WEATHER_APPCODE = "a8041b5ea4714c448ae5d6f9f7cf54d3";
+    public static final String IDENTITY_CARD_APPCODE = "a8041b5ea4714c448ae5d6f9f7cf54d3";
 }

@@ -33,6 +33,4 @@ public class HourForecast {
     @JsonProperty("weather")
     private String weather;
 
-    // Getters and Setters
-    // ...
 }

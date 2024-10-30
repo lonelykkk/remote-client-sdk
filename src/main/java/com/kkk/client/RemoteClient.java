@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kkk.domain.entity.HourForecast;
 import com.kkk.domain.entity.HourWeatherList;
+import com.kkk.domain.entity.IdentityCard;
 import com.kkk.utils.HttpUtils;
 import okhttp3.*;
 import org.apache.http.HttpResponse;
@@ -28,6 +29,7 @@ import java.util.UUID;
 
 import static com.kkk.constant.RemoteConstant.*;
 import static com.kkk.key.ApiCode.GET_WEATHER_APPCODE;
+import static com.kkk.key.ApiCode.IDENTITY_CARD_APPCODE;
 
 /**
  * 调用第三方接口服务端
@@ -172,6 +174,7 @@ public class RemoteClient {
 
     /**
      * 24小时天气查询接口
+     *
      * @param area 输入需要查询的天气地点
      * @return
      */
@@ -181,7 +184,7 @@ public class RemoteClient {
             String path = "/hour24";
             String method = "GET";
             Map<String, String> headers = new HashMap();
-            //最后在header中的格式(中间是英文空格)为Authorization:APPCODE 83359fd73fe94948385f570e3c139105
+
             headers.put("Authorization", "APPCODE " + GET_WEATHER_APPCODE);
             Map<String, String> querys = new HashMap<String, String>();
             querys.put("area", area);
@@ -194,6 +197,7 @@ public class RemoteClient {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = mapper.readTree(responseString);
             JsonNode showapiResBody = rootNode.get("showapi_res_body");
+            System.out.println(showapiResBody.toString());
 
             HourWeatherList hourWeatherList = mapper.treeToValue(showapiResBody, HourWeatherList.class);
             return hourWeatherList;
@@ -201,6 +205,54 @@ public class RemoteClient {
             throw new RuntimeException();
         }
 
+    }
+
+    /**
+     * 身份证实名认证api
+     * @param name 输入你的姓名
+     * @param idcard 输入你的身份证号
+     * @return
+     */
+    public IdentityCard getAuthenticationCard(String name,String idcard) {
+        String path = "/api-mall/api/id_card/check";
+        String method = "POST";
+        Map<String, String> headers = new HashMap<String, String>();
+
+        headers.put("Authorization", "APPCODE " + IDENTITY_CARD_APPCODE);
+        //根据API的要求，定义相对应的Content-Type
+        headers.put("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+        Map<String, String> querys = new HashMap<String, String>();
+        Map<String, String> bodys = new HashMap<String, String>();
+        bodys.put("name", name);
+        bodys.put("idcard", idcard);
+
+
+        try {
+            HttpResponse response = HttpUtils.doPost(IDENTITY_CARD_HOST, path, method, headers, querys, bodys);
+            //获取response的body
+            ObjectMapper mapper = new ObjectMapper();
+            String responseString = EntityUtils.toString(response.getEntity());
+            JsonNode jsonNode = mapper.readTree(responseString);
+            //获取响应结果是否正确
+            JsonNode result = jsonNode.get("code");
+            Integer flag = result.asInt();
+            System.out.println("响应结果为:" + flag);
+
+
+            IdentityCard identityCard = new IdentityCard();
+            //如果身份证信息正确，获取响应数据
+            if (flag == 200) {
+                JsonNode data = jsonNode.get("data");
+                identityCard = mapper.treeToValue(data, IdentityCard.class);
+            } else {
+                identityCard.setResult(1);
+                identityCard.setDesc("身份证信息有误");
+            }
+            System.out.println(responseString);
+            return identityCard;
+        } catch (Exception e) {
+            throw new RuntimeException();
+        }
     }
 
 }
