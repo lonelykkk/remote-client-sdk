@@ -23,7 +23,7 @@ remote-client-sdk是一个高性能、可扩展、专门用来提供第三方远
 </dependency>
 ```
 ### 提供的第三方接口服务(持续更新中)
-#### 1. openAI官方chatgpt-3.5增量模型接口调用
+### 1. openAI官方chatgpt-3.5增量模型接口调用
 > 入门案例
 ``` java
 public static void main(String[] args) {
@@ -32,7 +32,7 @@ public static void main(String[] args) {
         System.out.println(chat); //输出答案
     }
 ```
-#### 2.快速生成二维码接口
+### 2.快速生成二维码接口
 > 入门案例
 * 第一个参数msg为String类型，输入你要存入即将要生成的二维码里面的数据
 * 第二行参数size为Integer输入你需要生成二维码的大小
@@ -49,7 +49,7 @@ public static void main(String[] args) {
         System.out.println(url);
     }
 ```
-#### 3.英汉互译接口调用
+### 3.英汉互译接口调用
 > 入门案例
 ```java
  public static void main(String[] args) {
@@ -159,6 +159,47 @@ public class HourForecast {
     @JsonProperty("weather")
     private String weather;
 
+}
+```
+### 5.身份证实名认证api
+> 接口描述
+> 改api提供了身份证实名认证服务，用户只需要传入姓名和身份证号便可以返回对应的身份信息
+
+>入门案例
+
+```java
+public static void main(String[] args) throws Exception{
+        RemoteClient remoteClient = new RemoteClient();
+        IdentityCard identityCard = remoteClient.getAuthenticationCard("传入姓名", "传入身份证号");
+        //打印输出结果
+        System.out.println("生日：" + identityCard.getBirthday());
+        System.out.println("响应结果(1.不一致 0.一致)：" + identityCard.getResult());
+        System.out.println("地址：" + identityCard.getAddress());
+        System.out.println("订单编号：" + identityCard.getOrderNo());
+        System.out.println("性别：" + identityCard.getSex());
+        System.out.println("desc：" + identityCard.getDesc());
+    }
+```
+> 响应参数
+```json
+"data": {
+        "birthday": "19840816",
+        "result": 1,//1.不一致 0.一致
+        "address": "浙江省杭州市淳安县",//地址
+        "orderNo": "202406271440416095174",//订单编号
+        "sex": "男",//性别
+        "desc": "不一致"//描述
+    }
+```
+> 对应的实体类
+```java
+public class IdentityCard {
+    private String birthday;
+    private int result; //1.不一致 0.一致
+    private String address; //地址
+    private String orderNo;  //订单编号
+    private String sex; //性别
+    private String desc; //描述
 }
 ```
 
