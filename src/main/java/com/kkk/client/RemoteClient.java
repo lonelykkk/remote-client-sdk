@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kkk.domain.entity.HourForecast;
 import com.kkk.domain.entity.HourWeatherList;
 import com.kkk.domain.entity.IdentityCard;
+import com.kkk.service.RemoteClientService;
 import com.kkk.utils.HttpUtils;
 import okhttp3.*;
 import org.apache.http.HttpResponse;
@@ -43,6 +44,7 @@ public class RemoteClient {
 
 
     RestTemplate restTemplate = new RestTemplate();
+    RemoteClientService remoteClientService = new RemoteClientService();
 
     /**
      * 英汉互译
@@ -254,5 +256,18 @@ public class RemoteClient {
             throw new RuntimeException();
         }
     }
+
+    /**
+     * 发送短信验证
+     * @param phone 输入需要发送到哪个手机号
+     * @return
+     */
+    public Integer sendSms(String phone) {
+        return remoteClientService.sendSms(phone, null);
+    }
+
+    /*public Integer sendSms(String phone,String content) {
+        return remoteClientService.sendSms(phone, content);
+    }*/
 
 }
