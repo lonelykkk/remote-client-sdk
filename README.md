@@ -19,7 +19,7 @@ remote-client-sdk是一个高性能、可扩展、专门用来提供第三方远
 <dependency>
     <groupId>io.github.lonelykkk</groupId>
     <artifactId>remote-client-sdk</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.5</version>
 </dependency>
 ```
 ### 提供的第三方接口服务(持续更新中)
@@ -163,7 +163,7 @@ public class HourForecast {
 ```
 ### 5.身份证实名认证api
 > 接口描述
-> 改api提供了身份证实名认证服务，用户只需要传入姓名和身份证号便可以返回对应的身份信息
+> 该api提供了身份证实名认证服务，用户只需要传入姓名和身份证号便可以返回对应的身份信息
 
 >入门案例
 
@@ -201,6 +201,19 @@ public class IdentityCard {
     private String sex; //性别
     private String desc; //描述
 }
+```
+### 6.短信验证码服务api
+> 接口描述
+> 该短信服务api为用户提供了发送短信验证码服务，用户只需要传入需要发送短信验证的手机号，
+> 便可发送一个随机6位数验证码并返回
+
+>入门案例
+```java
+public static void main(String[] args) throws Exception{
+        RemoteClient remoteClient = new RemoteClient();
+        final Integer sms = remoteClient.sendSms("输入你的手机号"); //返回这个随机生成的验证码，以便开发人员做后续验证码校验
+        System.out.println("验证码为：" + sms); 
+    }
 ```
 
 ## 第三方接口将持续更新中
