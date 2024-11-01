@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kkk.domain.entity.HourForecast;
 import com.kkk.domain.entity.HourWeatherList;
 import com.kkk.domain.entity.IdentityCard;
+import com.kkk.domain.entity.ImgCaptcha;
 import com.kkk.service.RemoteClientService;
 import com.kkk.utils.HttpUtils;
 import okhttp3.*;
@@ -266,8 +267,49 @@ public class RemoteClient {
         return remoteClientService.sendSms(phone, null);
     }
 
-    /*public Integer sendSms(String phone,String content) {
-        return remoteClientService.sendSms(phone, content);
-    }*/
 
+    /**
+     * 生成图片验证码api
+     * @param count 输入你要生成的验证码的数量
+     * @return
+     */
+    public ImgCaptcha getImgCaptcha(int count) {
+        ImgCaptcha captcha = remoteClientService.getCaptcha(count);
+        return captcha;
+    }
+    public static void main(String[] args) throws Exception{
+        RemoteClient remoteClient = new RemoteClient();
+        /*try {
+            HourWeatherList hourWeatherList = remoteClient.getWeather("南昌");
+            // 定义日期格式
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmm");
+            for (HourForecast forecast : hourWeatherList.getHourList()) {
+                // 解析字符串为 Date 对象
+                Date date = dateFormat.parse(forecast.getTime());
+                System.out.println("Time: " + date);
+                System.out.println("Weather: " + forecast.getWeather());
+                System.out.println("Temperature: " + forecast.getTemperature());
+                System.out.println("Wind Direction: " + forecast.getWindDirection());
+                System.out.println("Wind Power: " + forecast.getWindPower());
+                System.out.println("---------------------------");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException();
+        }*/
+        /*IdentityCard identityCard = remoteClient.getAuthenticationCard("喻凯", "360427200307130839");
+        System.out.println("生日：" + identityCard.getBirthday());
+        System.out.println("响应结果(1.不一致 0.一致)：" + identityCard.getResult());
+        System.out.println("地址：" + identityCard.getAddress());
+        System.out.println("订单编号：" + identityCard.getOrderNo());
+        System.out.println("性别：" + identityCard.getSex());
+        System.out.println("desc：" + identityCard.getDesc());*/
+        /*final Integer sms = remoteClient.sendSms("13970095229");
+        System.out.println("验证码为：" + sms);*/
+        /*String chat = remoteClient.getAiChat("帮我用java写一个快速排序");
+        System.out.println(chat);*/
+
+        ImgCaptcha imgCaptcha = remoteClient.getImgCaptcha(5);
+        System.out.println("验证码为：" + imgCaptcha.getCaptchaText());
+        System.out.println("路径为：" + imgCaptcha.getCaptchaUrl());
+    }
 }
