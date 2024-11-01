@@ -216,5 +216,21 @@ public static void main(String[] args) throws Exception{
     }
 ```
 
+### 7.图形验证码api
+> 功能描述
+> 该图形验证码api可用于生成一个验证码图片，用户可以在如登录校验等类似功能时使用该api生成一个图形验证码
+> 该api返回图形验证码的内容以及图片的绝对路径，用户可根据返回的内容进行校验，可以根据返回的图片路径进行相应处理，如存储在数据库或者存储在云空间等等响应给前端
+
+> 入门案例
+```java
+public static void main(String[] args) throws Exception{
+        RemoteClient remoteClient = new RemoteClient();
+        
+        ImgCaptcha imgCaptcha = remoteClient.getImgCaptcha(5); //参数为int类型，用于指定你需要生成的图形验证码的数据量个数
+        System.out.println("验证码为：" + imgCaptcha.getCaptchaText());
+        System.out.println("路径为：" + imgCaptcha.getCaptchaUrl());
+    }
+```
+
 ## 更多api将持续更新中
 
