@@ -13,4 +13,5 @@ public class RemoteConstant {
     public static final String SPOT_TO_WEATHER = "https://ali-weather.showapi.com/spot-to-weather";
     public static final String ALI_WEATHER_HOST = "https://ali-weather.showapi.com";
     public static final String IDENTITY_CARD_HOST = "https://kzidcardv1.market.alicloudapi.com";
+    public static final String SENSITIVE_FILTER_HOST = "https://lhwbshgl.market.alicloudapi.com";
 }

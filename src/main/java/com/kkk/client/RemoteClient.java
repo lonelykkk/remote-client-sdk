@@ -32,8 +32,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.kkk.constant.RemoteConstant.*;
-import static com.kkk.key.ApiCode.GET_WEATHER_APPCODE;
-import static com.kkk.key.ApiCode.IDENTITY_CARD_APPCODE;
+import static com.kkk.key.ApiCode.*;
 import static com.kkk.key.QQSmtpApi.MAIL_API_CODE;
 import static com.kkk.key.QQSmtpApi.SMTP_FROM_QQ;
 
@@ -279,6 +278,11 @@ public class RemoteClient {
         return captcha;
     }
 
+    /**
+     * 发送邮箱验证码
+     * @param to 输入需要接收验证码的邮箱
+     * @return
+     */
     public String sendSmtp(String to) {
         String code = CodeConstant.generateRandomText(4);
         try {
@@ -363,6 +367,44 @@ public class RemoteClient {
         }
         return code;
     }
+
+    /**
+     * 敏感词过滤接口
+     * @param text 传入你需要校验的文本
+     * @return 返回结果 1：合规，2：不合规，3：疑似，4：审核失败，-1：api调用失败
+     */
+    public int SensitiveFilter(String text) {
+        String path = "/sensitive_words/filter";
+        String method = "POST";
+        Map<String, String> headers = new HashMap<String, String>();
+        //最后在header中的格式(中间是英文空格)为Authorization:APPCODE 83359fd73fe94948385f570e3c139105
+        headers.put("Authorization", "APPCODE " + ALIYUN_API_CODE);
+        //根据API的要求，定义相对应的Content-Type
+        headers.put("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+        Map<String, String> querys = new HashMap<String, String>();
+        Map<String, String> bodys = new HashMap<String, String>();
+        bodys.put("text", text);
+
+        int flag = -1;
+        try {
+            HttpResponse response = HttpUtils.doPost(SENSITIVE_FILTER_HOST, path, method, headers, querys, bodys);
+            System.out.println(response.toString());
+            //获取response的body
+            ObjectMapper mapper = new ObjectMapper();
+            String responseString = EntityUtils.toString(response.getEntity());
+            JsonNode jsonNode = mapper.readTree(responseString);
+            //获取响应结果是否正确
+            JsonNode data = jsonNode.get("data");
+            JsonNode result = data.get("result");
+            String str = result.asText();
+            flag = Integer.parseInt(str);
+            //1：合规，2：不合规，3：疑似，4：审核失败，-1：api调用失败
+            System.out.println("响应结果为:" + flag);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return flag;
+    }
     public static void main(String[] args) throws Exception{
         RemoteClient remoteClient = new RemoteClient();
         /*try {
@@ -396,7 +438,9 @@ public class RemoteClient {
         /*ImgCaptcha imgCaptcha = remoteClient.getImgCaptcha(5);
         System.out.println("验证码为：" + imgCaptcha.getCaptchaText());
         System.out.println("路径为：" + imgCaptcha.getCaptchaUrl());*/
-        String code = remoteClient.sendSmtp("2765314967@qq.com");
-        System.out.println("收到的邮箱验证码为：" + code);
+        /*String code = remoteClient.sendSmtp("2765314967@qq.com");
+        System.out.println("收到的邮箱验证码为：" + code);*/
+        int result = remoteClient.SensitiveFilter("你好");
+        //result：1：合规，2：不合规，3：疑似，4：审核失败，-1：api调用失败
     }
 }
