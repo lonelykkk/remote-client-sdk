@@ -153,17 +153,6 @@ public static void main(String[] args) throws Exception{
         System.out.println("desc：" + identityCard.getDesc());
     }
 ```
-> 响应参数
-```json
-"data": {
-        "birthday": "19840816",
-        "result": 1,//1.不一致 0.一致
-        "address": "浙江省杭州市淳安县",//地址
-        "orderNo": "202406271440416095174",//订单编号
-        "sex": "男",//性别
-        "desc": "不一致"//描述
-    }
-```
 > 对应的实体类
 ```java
 public class IdentityCard {
@@ -219,5 +208,19 @@ public static void main(String[] args) throws Exception{
     }
 ```
 
+### 9.敏感词过滤api
+> 功能描述
+> 该功能主要用于对文本合法性进行校验，查看是否有敏感词，如对用户发送的评论进行校验，如果有违禁词则会返回对应的结果方便开发人员进一步处理
+> 返回类型为int类型，对应结果为 1：合规，2：不合规，3：疑似，4：审核失败，-1：api调用失败
+
+>入门案例
+```java
+public static void main(String[] args) throws Exception{
+        RemoteClient remoteClient = new RemoteClient();
+        //result：1：合规，2：不合规，3：疑似，4：审核失败，-1：api调用失败
+        int result = remoteClient.SensitiveFilter("你好");
+        //后续可对result进行判断以便做进一步处理
+    }
+```
 ## 更多api将持续更新中
 
