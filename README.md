@@ -19,7 +19,7 @@ remote-client-sdk是一个高性能、可扩展、专门用来提供第三方远
 <dependency>
     <groupId>io.github.lonelykkk</groupId>
     <artifactId>remote-client-sdk</artifactId>
-    <version>0.0.5</version>
+    <version>0.0.7</version>
 </dependency>
 ```
 ### 提供的第三方接口服务(持续更新中)
