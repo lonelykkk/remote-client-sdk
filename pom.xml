@@ -13,7 +13,7 @@
 
     <groupId>io.github.lonelykkk</groupId>
     <artifactId>remote-client-sdk</artifactId>
-    <version>0.0.5</version>
+    <version>0.0.7</version>
     <name>remote-client-sdk</name>
     <description>第三方接口服务</description>
     <url>https://github.com/lonelykkk/remote-client-sdk</url>
