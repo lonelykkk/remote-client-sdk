@@ -85,33 +85,6 @@ public static void main(String[] args) {
         }
 }
 ```
-> 响应参数
-```json
-"showapi_res_body": {
-		"ret_code": 0,
-		"area": "上海",//查到的地区名
-		"areaid": "",//查到的地区id
-		"hourList": [//24小时预报列表
-			{
-				"weather_code": "01",//天气编码
-				"time": "201611061000",//预报时间
-				"wind_direction": "东风",//风向
-				"wind_power": "4-5级 8.0~10.7m/s",//风力
-				"weather": "多云",//天气名称
-				"temperature": "21"//温度
-			},
-			{
-				"weather_code": "01",//天气编码
-				"time": "201611060900",//预报时间
-				"wind_direction": "东风",//风向
-				"wind_power": "3-4级 5.5~7.9m/s",//风力
-				"weather": "多云",//天气名称
-				"temperature": "19"//温度
-			}
-            ...24小时的天气一小时为一间隔
-		]
-	}
-```
 > 对应的实体类
 ```java
 public class HourWeatherList {
@@ -229,6 +202,20 @@ public static void main(String[] args) throws Exception{
         ImgCaptcha imgCaptcha = remoteClient.getImgCaptcha(5); //参数为int类型，用于指定你需要生成的图形验证码的数据量个数
         System.out.println("验证码为：" + imgCaptcha.getCaptchaText());
         System.out.println("路径为：" + imgCaptcha.getCaptchaUrl());
+    }
+```
+
+### 8.发送邮箱验证码api
+> 功能描述
+> 该邮箱验证码主要用于用户在进行登录注册时通过邮箱验证码进行验证，用户需要输入你的邮箱，之后便可对你指定的邮箱发送随机生成的验证码
+> 随后返回一个String类型的字符串，你可以根据该验证码进行校验
+
+> 入门案例
+```java
+public static void main(String[] args) throws Exception{
+        RemoteClient remoteClient = new RemoteClient();
+        String code = remoteClient.sendSmtp("111@qq.com"); //此处输入你需要发送的邮箱，随后返回你发送的验证码方便后续校验
+        System.out.println("收到的邮箱验证码为：" + code);
     }
 ```
 
