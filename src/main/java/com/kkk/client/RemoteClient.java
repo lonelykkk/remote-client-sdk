@@ -3,6 +3,7 @@ package com.kkk.client;
 import cn.hutool.json.JSONObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kkk.constant.CodeConstant;
 import com.kkk.domain.entity.HourForecast;
 import com.kkk.domain.entity.HourWeatherList;
 import com.kkk.domain.entity.IdentityCard;
@@ -10,6 +11,7 @@ import com.kkk.domain.entity.ImgCaptcha;
 import com.kkk.service.RemoteClientService;
 import com.kkk.utils.HttpUtils;
 import okhttp3.*;
+import org.apache.commons.mail.HtmlEmail;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.springframework.core.io.Resource;
@@ -32,10 +34,11 @@ import java.util.UUID;
 import static com.kkk.constant.RemoteConstant.*;
 import static com.kkk.key.ApiCode.GET_WEATHER_APPCODE;
 import static com.kkk.key.ApiCode.IDENTITY_CARD_APPCODE;
+import static com.kkk.key.QQSmtpApi.MAIL_API_CODE;
+import static com.kkk.key.QQSmtpApi.SMTP_FROM_QQ;
 
 /**
  * 调用第三方接口服务端
- *
  * @author lonelykkk
  * @email 2765314967@qq.com
  * @date 2024/10/27 11:03
@@ -43,13 +46,12 @@ import static com.kkk.key.ApiCode.IDENTITY_CARD_APPCODE;
  */
 public class RemoteClient {
 
-
     RestTemplate restTemplate = new RestTemplate();
     RemoteClientService remoteClientService = new RemoteClientService();
+    HtmlEmail emails=new HtmlEmail();
 
     /**
      * 英汉互译
-     *
      * @param msg 输入你需要翻译的内容
      * @return
      */
@@ -72,7 +74,6 @@ public class RemoteClient {
 
     /**
      * 二维码生成接口
-     *
      * @param msg  输入你要填入二维码的信息
      * @param size 输入二维码的图片大小
      * @return
@@ -277,6 +278,91 @@ public class RemoteClient {
         ImgCaptcha captcha = remoteClientService.getCaptcha(count);
         return captcha;
     }
+
+    public String sendSmtp(String to) {
+        String code = CodeConstant.generateRandomText(4);
+        try {
+            emails.setHostName("smtp.qq.com");
+            emails.setCharset("utf-8");
+            emails.setSmtpPort(465);
+            emails.setSSLOnConnect(true);
+            emails.addTo(to);//设置收件人
+            emails.setFrom(SMTP_FROM_QQ,"kkk");
+            emails.setAuthentication(SMTP_FROM_QQ,MAIL_API_CODE);
+            emails.setSubject("验证码来略，快快查收");//设置发送主题
+            emails.setMsg("<!DOCTYPE html>\n" +
+                    "<html lang=\"zh-CN\">\n" +
+                    "<head>\n" +
+                    "    <meta charset=\"UTF-8\">\n" +
+                    "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
+                    "    <title>QQ邮箱验证码</title>\n" +
+                    "    <style>\n" +
+                    "        body {\n" +
+                    "            font-family: Arial, sans-serif;\n" +
+                    "            background-color: #f4f4f4;\n" +
+                    "            margin: 0;\n" +
+                    "            padding: 0;\n" +
+                    "            display: flex;\n" +
+                    "            justify-content: center;\n" +
+                    "            align-items: center;\n" +
+                    "            height: 100vh;\n" +
+                    "        }\n" +
+                    "        .container {\n" +
+                    "            background-color: #fff;\n" +
+                    "            padding: 20px;\n" +
+                    "            border-radius: 8px;\n" +
+                    "            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\n" +
+                    "            text-align: center;\n" +
+                    "            max-width: 400px;\n" +
+                    "        }\n" +
+                    "        .logo {\n" +
+                    "            width: 100px;\n" +
+                    "            margin-bottom: 20px;\n" +
+                    "        }\n" +
+                    "        h1 {\n" +
+                    "            font-size: 24px;\n" +
+                    "            color: #333;\n" +
+                    "            margin-bottom: 10px;\n" +
+                    "        }\n" +
+                    "        p {\n" +
+                    "            font-size: 16px;\n" +
+                    "            color: #666;\n" +
+                    "            margin-bottom: 20px;\n" +
+                    "            text-align: left;\n" +
+                    "        }\n" +
+                    "        .verification-code {\n" +
+                    "            font-size: 32px;\n" +
+                    "            font-weight: bold;\n" +
+                    "            color: #007bff;\n" +
+                    "            background-color: #e9ecef;\n" +
+                    "            padding: 10px 20px;\n" +
+                    "            border-radius: 8px;\n" +
+                    "            display: inline-block;\n" +
+                    "            margin-bottom: 20px;\n" +
+                    "        }\n" +
+                    "        .note {\n" +
+                    "            font-size: 14px;\n" +
+                    "            color: #999;\n" +
+                    "            text-align: left;\n" +
+                    "        }\n" +
+                    "    </style>\n" +
+                    "</head>\n" +
+                    "<body>\n" +
+                    "    <div class=\"container\">\n" +
+                    "        <img src=\"https://mail.qq.com/zh_CN/htmledition/images/logo/qqmail/qqmail_logo_default_200h.png\" alt=\"QQ邮箱\" class=\"logo\">\n" +
+                    "        <h1>您的验证码</h1>\n" +
+                    "        <p>请使用以下验证码完成您的操作：</p>\n" +
+                    "        <div class=\"verification-code\">"+code+"</div>\n" +
+                    "        <p class=\"note\">请注意：验证码将在5分钟后失效，请尽快使用。</p>\n" +
+                    "    </div>\n" +
+                    "</body>\n" +
+                    "</html>");//设置发送内容
+            emails.send();//进行发送
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return code;
+    }
     public static void main(String[] args) throws Exception{
         RemoteClient remoteClient = new RemoteClient();
         /*try {
@@ -307,9 +393,10 @@ public class RemoteClient {
         System.out.println("验证码为：" + sms);*/
         /*String chat = remoteClient.getAiChat("帮我用java写一个快速排序");
         System.out.println(chat);*/
-
-        ImgCaptcha imgCaptcha = remoteClient.getImgCaptcha(5);
+        /*ImgCaptcha imgCaptcha = remoteClient.getImgCaptcha(5);
         System.out.println("验证码为：" + imgCaptcha.getCaptchaText());
-        System.out.println("路径为：" + imgCaptcha.getCaptchaUrl());
+        System.out.println("路径为：" + imgCaptcha.getCaptchaUrl());*/
+        String code = remoteClient.sendSmtp("2765314967@qq.com");
+        System.out.println("收到的邮箱验证码为：" + code);
     }
 }
