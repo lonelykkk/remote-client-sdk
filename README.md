@@ -23,7 +23,11 @@ remote-client-sdk是一个高性能、可扩展、专门用来提供第三方远
 </dependency>
 ```
 ### 提供的第三方接口服务(持续更新中)
-### 1. openAI官方chatgpt-3.5增量模型接口调用
+### chatgpt增量模型接口调用
+> 接口描述
+>>
+>> 一行代码调用你gpt接口，只需要输入问题即可返回回答，可方便快速集成在你的项目中。
+
 > 入门案例
 ``` java
 public static void main(String[] args) {
