@@ -5,7 +5,6 @@
 - [特性](#特性)
 - [快速开始](#快速开始)
   - [环境要求](#环境要求)
-  - [配置](#配置)
 - [API增量模型(0.0.9版本，较上一版本扩展性更强，更推荐)](#api增量模型009版本较上一版本扩展性更强更推荐)
   - [版本概述](#版本概述)
   - [快速入门](#快速入门)
@@ -23,6 +22,7 @@
 - [有点杂乱、下课了，不想整理。。。下次整理#-#](#)
 - `----------------------------------------------------------------------------------`
 - [api增量模型(0.0.7版本)](#api增量模型007版本)
+  - [配置](#配置)
   - [chatgpt增量模型接口调用](#chatgpt增量模型接口调用)
   - [快速生成二维码接口](#快速生成二维码接口)
   - [英汉互译接口调用](#英汉互译接口调用)
@@ -47,15 +47,6 @@ remote-client-sdk是一个高性能、可扩展、专门用来提供第三方远
 * JDK 8或更高版本
 * Maven 3.6.0或更高版本
 * SpringBoot 2.X 版本
-### 配置
-1. 在pom.xml文件中添加以下依赖：
-```xml
-<dependency>
-    <groupId>io.github.lonelykkk</groupId>
-    <artifactId>remote-client-sdk</artifactId>
-    <version>0.0.7</version>
-</dependency>
-```
 ## api增量模型(0.0.9版本，较上一版本扩展性更强，更推荐)
 ### 版本概述
 > **此版本较0.0.7版本提高了用户的可用性，为防止上一版本中部分api秘钥被弃用，用户可以使用自己的api秘钥仅供自己的项目使用**
@@ -269,6 +260,15 @@ public static void main(String[] args) throws Exception{
 
 
 ## api增量模型(0.0.7版本)
+### 配置
+1. 在pom.xml文件中添加以下依赖：
+```xml
+<dependency>
+    <groupId>io.github.lonelykkk</groupId>
+    <artifactId>remote-client-sdk</artifactId>
+    <version>0.0.7</version>
+</dependency>
+```
 ### chatgpt增量模型接口调用
 > 接口描述
 >>
