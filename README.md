@@ -6,7 +6,12 @@
 - [快速开始](#快速开始)
   - [环境要求](#环境要求)
   - [配置](#配置)
-- [提供的第三方API服务(持续更新中)](#提供的第三方api服务持续更新中)
+- [API增量模型(0.0.9版本，较上一版本扩展性更强，更推荐)](#api增量模型009版本较上一版本扩展性更强更推荐)
+  - [版本概述](#版本概述)
+  - [快速入门](#快速入门)
+    - [导入依赖](#导入依赖)
+    - [快速开始](#快速开始)
+- [api增量模型(0.0.7版本)，不久后可能会弃用](#api增量模型007版本不久后可能会弃用)
   - [chatgpt增量模型接口调用](#chatgpt增量模型接口调用)
   - [快速生成二维码接口](#快速生成二维码接口)
   - [英汉互译接口调用](#英汉互译接口调用)
@@ -25,7 +30,7 @@ remote-client-sdk是一个高性能、可扩展、专门用来提供第三方远
 * 高性能：基于Spring Boot，提供快速响应和高并发处理能力。
 * 易于集成：提供简单易用的API，支持快速集成到现有项目中。
 * 扩展性强：支持自定义消息处理逻辑和模型配置，满足复杂业务需求。
-* 简单易用：第三方api接口均已封装好，直接调用即可，简单易上手。
+* 简单易用：各类常见api接口均已封装好，一行代码即可直接调用，简单易上手，无需阅读复杂生涩的开发文档。
 ## 快速开始
 ### 环境要求
 * JDK 8或更高版本
@@ -40,8 +45,50 @@ remote-client-sdk是一个高性能、可扩展、专门用来提供第三方远
     <version>0.0.7</version>
 </dependency>
 ```
+## api增量模型(0.0.9版本，较上一版本扩展性更强，更推荐)
+### 版本概述
+> **此版本较0.0.7版本提高了用户的可用性，为防止上一版本中部分api秘钥被弃用，用户可以使用自己的api秘钥仅供自己的项目使用**
+### 快速入门
+> ### 导入依赖
+```xml
+ <dependency>
+      <groupId>io.github.lonelykkk</groupId>
+      <artifactId>remote-client-sdk</artifactId>
+      <version>0.0.9</version>
+</dependency>
+```
+> **用户可在yml/yaml等配置文件中填写自己的api秘钥以防上一版本秘钥过期,如下所示,你只需要输入kkk.便会出现对应的提示**
+```yml
+kkk:
+  client:
+    api-code: a8041b5ea4ksad5d6f9f7cf54d3 # 对应部分阿里云的接口调用api秘钥，如天气查询，身份证验证，短信验证码，敏感词过滤等api
+    qq: test@qq.com # 对应发送qq邮箱stmp服务的账号
+    qq-mail-code: jhdogitzipnsadichhf #对应发送qq邮箱stmp服务的秘钥
+```
+> ### 快速开始
+```java
+@SpringBootTest
+public class Test {
 
-## 提供的第三方api服务(持续更新中)
+    @Autowired
+    private RemoteClient remoteClient; //先注入容器
+
+    //gpt api调用
+    @org.junit.jupiter.api.Test
+    public void test01() {
+        String chat = remoteClient.getAiChat("帮我用java写一个快速排序代码");
+        System.out.println(chat);
+    }
+    //qq邮箱验证码api调用
+    @org.junit.jupiter.api.Test
+    public void test02() {
+        String smtp = remoteClient.sendSmtp("test@qq.com");
+        System.out.println(smtp);
+    }
+    //等等,其余业务逻辑与0.0.7版本一样
+}
+```
+## api增量模型(0.0.7版本,不久后可能会弃用)
 ### chatgpt增量模型接口调用
 > 接口描述
 >>
