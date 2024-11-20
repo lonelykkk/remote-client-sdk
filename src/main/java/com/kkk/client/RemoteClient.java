@@ -38,6 +38,7 @@ import static com.kkk.key.QQSmtpApi.SMTP_FROM_QQ;
 
 /**
  * 调用第三方接口服务端
+ *
  * @author lonelykkk
  * @email 2765314967@qq.com
  * @date 2024/10/27 11:03
@@ -45,12 +46,32 @@ import static com.kkk.key.QQSmtpApi.SMTP_FROM_QQ;
  */
 public class RemoteClient {
 
+    private String apiCode;
+    private String qq;
+    private String qqMailCode;
+
+    public RemoteClient(String apiCode, String qq, String qqMailCode) {
+        if (StringUtils.hasText(apiCode)) {
+            this.apiCode = ALIYUN_API_CODE;
+        } else {
+            this.apiCode = apiCode;
+        }
+        if (!StringUtils.hasText(qq)||!StringUtils.hasText(qqMailCode)) {
+            this.qq = SMTP_FROM_QQ;
+            this.qqMailCode = MAIL_API_CODE;
+        } else {
+            this.qq = qq;
+            this.qqMailCode = qqMailCode;
+        }
+    }
+
     RestTemplate restTemplate = new RestTemplate();
     RemoteClientService remoteClientService = new RemoteClientService();
-    HtmlEmail emails=new HtmlEmail();
+    HtmlEmail emails = new HtmlEmail();
 
     /**
      * 英汉互译
+     *
      * @param msg 输入你需要翻译的内容
      * @return
      */
@@ -73,6 +94,7 @@ public class RemoteClient {
 
     /**
      * 二维码生成接口
+     *
      * @param msg  输入你要填入二维码的信息
      * @param size 输入二维码的图片大小
      * @return
@@ -188,7 +210,7 @@ public class RemoteClient {
             String method = "GET";
             Map<String, String> headers = new HashMap();
 
-            headers.put("Authorization", "APPCODE " + GET_WEATHER_APPCODE);
+            headers.put("Authorization", "APPCODE " + apiCode);
             Map<String, String> querys = new HashMap<String, String>();
             querys.put("area", area);
             querys.put("areaCode", "areaCode");
@@ -212,16 +234,17 @@ public class RemoteClient {
 
     /**
      * 身份证实名认证api
-     * @param name 输入你的姓名
+     *
+     * @param name   输入你的姓名
      * @param idcard 输入你的身份证号
      * @return
      */
-    public IdentityCard getAuthenticationCard(String name,String idcard) {
+    public IdentityCard getAuthenticationCard(String name, String idcard) {
         String path = "/api-mall/api/id_card/check";
         String method = "POST";
         Map<String, String> headers = new HashMap<String, String>();
 
-        headers.put("Authorization", "APPCODE " + IDENTITY_CARD_APPCODE);
+        headers.put("Authorization", "APPCODE " + apiCode);
         //根据API的要求，定义相对应的Content-Type
         headers.put("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
         Map<String, String> querys = new HashMap<String, String>();
@@ -260,6 +283,7 @@ public class RemoteClient {
 
     /**
      * 发送短信验证
+     *
      * @param phone 输入需要发送到哪个手机号
      * @return
      */
@@ -270,6 +294,7 @@ public class RemoteClient {
 
     /**
      * 生成图片验证码api
+     *
      * @param count 输入你要生成的验证码的数量
      * @return
      */
@@ -280,6 +305,7 @@ public class RemoteClient {
 
     /**
      * 发送邮箱验证码
+     *
      * @param to 输入需要接收验证码的邮箱
      * @return
      */
@@ -291,8 +317,8 @@ public class RemoteClient {
             emails.setSmtpPort(465);
             emails.setSSLOnConnect(true);
             emails.addTo(to);//设置收件人
-            emails.setFrom(SMTP_FROM_QQ,"kkk");
-            emails.setAuthentication(SMTP_FROM_QQ,MAIL_API_CODE);
+            emails.setFrom(qq, null);
+            emails.setAuthentication(qq, qqMailCode);
             emails.setSubject("验证码来略，快快查收");//设置发送主题
             emails.setMsg("<!DOCTYPE html>\n" +
                     "<html lang=\"zh-CN\">\n" +
@@ -356,7 +382,7 @@ public class RemoteClient {
                     "        <img src=\"https://mail.qq.com/zh_CN/htmledition/images/logo/qqmail/qqmail_logo_default_200h.png\" alt=\"QQ邮箱\" class=\"logo\">\n" +
                     "        <h1>您的验证码</h1>\n" +
                     "        <p>请使用以下验证码完成您的操作：</p>\n" +
-                    "        <div class=\"verification-code\">"+code+"</div>\n" +
+                    "        <div class=\"verification-code\">" + code + "</div>\n" +
                     "        <p class=\"note\">请注意：验证码将在5分钟后失效，请尽快使用。</p>\n" +
                     "    </div>\n" +
                     "</body>\n" +
@@ -370,6 +396,7 @@ public class RemoteClient {
 
     /**
      * 敏感词过滤接口
+     *
      * @param text 传入你需要校验的文本
      * @return 返回结果 1：合规，2：不合规，3：疑似，4：审核失败，-1：api调用失败
      */
@@ -377,8 +404,7 @@ public class RemoteClient {
         String path = "/sensitive_words/filter";
         String method = "POST";
         Map<String, String> headers = new HashMap<String, String>();
-        //最后在header中的格式(中间是英文空格)为Authorization:APPCODE 83359fd73fe94948385f570e3c139105
-        headers.put("Authorization", "APPCODE " + ALIYUN_API_CODE);
+        headers.put("Authorization", "APPCODE " + apiCode);
         //根据API的要求，定义相对应的Content-Type
         headers.put("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
         Map<String, String> querys = new HashMap<String, String>();
@@ -405,8 +431,9 @@ public class RemoteClient {
         }
         return flag;
     }
-    public static void main(String[] args) throws Exception{
-        RemoteClient remoteClient = new RemoteClient();
+
+    public static void main(String[] args) throws Exception {
+        //RemoteClient remoteClient = new RemoteClient();
         /*try {
             HourWeatherList hourWeatherList = remoteClient.getWeather("南昌");
             // 定义日期格式
@@ -440,7 +467,7 @@ public class RemoteClient {
         System.out.println("路径为：" + imgCaptcha.getCaptchaUrl());*/
         /*String code = remoteClient.sendSmtp("2765314967@qq.com");
         System.out.println("收到的邮箱验证码为：" + code);*/
-        int result = remoteClient.SensitiveFilter("你好");
+        //int result = remoteClient.SensitiveFilter("你好");
         //result：1：合规，2：不合规，3：疑似，4：审核失败，-1：api调用失败
     }
 }
