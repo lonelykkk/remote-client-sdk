@@ -149,23 +149,7 @@ public class RemoteClient {
 
             MediaType mediaType = MediaType.parse("application/json");
 
-            String json = "{\n" +
-                    "  \"max_tokens\": 1200,\n" +
-                    "  \"model\": \"gpt-3.5-turbo\",\n" +
-                    "  \"temperature\": 0.8,\n" +
-                    "  \"top_p\": 1,\n" +
-                    "  \"presence_penalty\": 1,\n" +
-                    "  \"messages\": [\n" +
-                    "    {\n" +
-                    "      \"role\": \"system\",\n" +
-                    "      \"content\": \"You are ChatGPT, a large language model trained by OpenAI. Answer as concisely as possible.\"\n" +
-                    "    },\n" +
-                    "    {\n" +
-                    "      \"role\": \"user\",\n" +
-                    "      \"content\": " + "\"" + msg + "\"" + "\n" +
-                    "    }\n" +
-                    "  ]\n" +
-                    "}";
+            String json = remoteClientService.getGptKey(msg);
 
             RequestBody body = RequestBody.create(mediaType, json);
             Request request = new Request.Builder()
@@ -320,73 +304,7 @@ public class RemoteClient {
             emails.setFrom(qq, null);
             emails.setAuthentication(qq, qqMailCode);
             emails.setSubject("验证码来略，快快查收");//设置发送主题
-            emails.setMsg("<!DOCTYPE html>\n" +
-                    "<html lang=\"zh-CN\">\n" +
-                    "<head>\n" +
-                    "    <meta charset=\"UTF-8\">\n" +
-                    "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
-                    "    <title>QQ邮箱验证码</title>\n" +
-                    "    <style>\n" +
-                    "        body {\n" +
-                    "            font-family: Arial, sans-serif;\n" +
-                    "            background-color: #f4f4f4;\n" +
-                    "            margin: 0;\n" +
-                    "            padding: 0;\n" +
-                    "            display: flex;\n" +
-                    "            justify-content: center;\n" +
-                    "            align-items: center;\n" +
-                    "            height: 100vh;\n" +
-                    "        }\n" +
-                    "        .container {\n" +
-                    "            background-color: #fff;\n" +
-                    "            padding: 20px;\n" +
-                    "            border-radius: 8px;\n" +
-                    "            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\n" +
-                    "            text-align: center;\n" +
-                    "            max-width: 400px;\n" +
-                    "        }\n" +
-                    "        .logo {\n" +
-                    "            width: 100px;\n" +
-                    "            margin-bottom: 20px;\n" +
-                    "        }\n" +
-                    "        h1 {\n" +
-                    "            font-size: 24px;\n" +
-                    "            color: #333;\n" +
-                    "            margin-bottom: 10px;\n" +
-                    "        }\n" +
-                    "        p {\n" +
-                    "            font-size: 16px;\n" +
-                    "            color: #666;\n" +
-                    "            margin-bottom: 20px;\n" +
-                    "            text-align: left;\n" +
-                    "        }\n" +
-                    "        .verification-code {\n" +
-                    "            font-size: 32px;\n" +
-                    "            font-weight: bold;\n" +
-                    "            color: #007bff;\n" +
-                    "            background-color: #e9ecef;\n" +
-                    "            padding: 10px 20px;\n" +
-                    "            border-radius: 8px;\n" +
-                    "            display: inline-block;\n" +
-                    "            margin-bottom: 20px;\n" +
-                    "        }\n" +
-                    "        .note {\n" +
-                    "            font-size: 14px;\n" +
-                    "            color: #999;\n" +
-                    "            text-align: left;\n" +
-                    "        }\n" +
-                    "    </style>\n" +
-                    "</head>\n" +
-                    "<body>\n" +
-                    "    <div class=\"container\">\n" +
-                    "        <img src=\"https://mail.qq.com/zh_CN/htmledition/images/logo/qqmail/qqmail_logo_default_200h.png\" alt=\"QQ邮箱\" class=\"logo\">\n" +
-                    "        <h1>您的验证码</h1>\n" +
-                    "        <p>请使用以下验证码完成您的操作：</p>\n" +
-                    "        <div class=\"verification-code\">" + code + "</div>\n" +
-                    "        <p class=\"note\">请注意：验证码将在5分钟后失效，请尽快使用。</p>\n" +
-                    "    </div>\n" +
-                    "</body>\n" +
-                    "</html>");//设置发送内容
+            emails.setMsg(remoteClientService.getEmailHtml(code));//设置发送内容
             emails.send();//进行发送
         } catch (Exception e) {
             e.printStackTrace();
