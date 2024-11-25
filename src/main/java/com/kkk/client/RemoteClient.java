@@ -4,7 +4,6 @@ import cn.hutool.json.JSONObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kkk.constant.CodeConstant;
-import com.kkk.domain.entity.HourForecast;
 import com.kkk.domain.entity.HourWeatherList;
 import com.kkk.domain.entity.IdentityCard;
 import com.kkk.domain.entity.ImgCaptcha;
@@ -25,16 +24,12 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 import static com.kkk.constant.RemoteConstant.*;
-import static com.kkk.key.ApiCode.*;
-import static com.kkk.key.QQSmtpApi.MAIL_API_CODE;
-import static com.kkk.key.QQSmtpApi.SMTP_FROM_QQ;
+import static com.kkk.key.ApiKey.*;
 
 /**
  * 调用第三方接口服务端
@@ -156,7 +151,7 @@ public class RemoteClient {
                     .url(AI_CHAT_URL)
                     .post(body)
                     .addHeader("Content-Type", "application/json")
-                    .addHeader("Authorization", "hk-l0ik8q100004543128fa47fb2113ad7a48be4de270945998")
+                    .addHeader("Authorization", OPEN_AI_GPT_KEY)
                     .build();
 
             Call call = client.newCall(request);
@@ -172,9 +167,6 @@ public class RemoteClient {
 
             // 从message对象中获取content字段
             String content = messageObject.getStr("content");
-
-            // 输出获取到的content内容
-            System.out.println(content);
             return content;
         } catch (IOException e) {
             throw new RuntimeException();
@@ -313,6 +305,32 @@ public class RemoteClient {
     }
 
     /**
+     * 发送邮箱
+     * @param to 接收人
+     * @param topic 自定义邮件主题
+     * @param content 邮件内容
+     * @return
+     */
+    public String sendSmtp(String to,String topic,String content) {
+        String code = CodeConstant.generateRandomText(4);
+        try {
+            emails.setHostName("smtp.qq.com");
+            emails.setCharset("utf-8");
+            emails.setSmtpPort(465);
+            emails.setSSLOnConnect(true);
+            emails.addTo(to);//设置收件人
+            emails.setFrom(qq, null);
+            emails.setAuthentication(qq, qqMailCode);
+            emails.setSubject(topic);//设置发送主题
+            emails.setMsg(content);//设置发送内容
+            emails.send();//进行发送
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return code;
+    }
+
+    /**
      * 敏感词过滤接口
      *
      * @param text 传入你需要校验的文本
@@ -343,7 +361,7 @@ public class RemoteClient {
             String str = result.asText();
             flag = Integer.parseInt(str);
             //1：合规，2：不合规，3：疑似，4：审核失败，-1：api调用失败
-            System.out.println("响应结果为:" + flag);
+            //System.out.println("响应结果为:" + flag);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -351,41 +369,7 @@ public class RemoteClient {
     }
 
     public static void main(String[] args) throws Exception {
-        //RemoteClient remoteClient = new RemoteClient();
-        /*try {
-            HourWeatherList hourWeatherList = remoteClient.getWeather("南昌");
-            // 定义日期格式
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmm");
-            for (HourForecast forecast : hourWeatherList.getHourList()) {
-                // 解析字符串为 Date 对象
-                Date date = dateFormat.parse(forecast.getTime());
-                System.out.println("Time: " + date);
-                System.out.println("Weather: " + forecast.getWeather());
-                System.out.println("Temperature: " + forecast.getTemperature());
-                System.out.println("Wind Direction: " + forecast.getWindDirection());
-                System.out.println("Wind Power: " + forecast.getWindPower());
-                System.out.println("---------------------------");
-            }
-        } catch (Exception e) {
-            throw new RuntimeException();
-        }*/
-        /*IdentityCard identityCard = remoteClient.getAuthenticationCard("喻凯", "360427200307130839");
-        System.out.println("生日：" + identityCard.getBirthday());
-        System.out.println("响应结果(1.不一致 0.一致)：" + identityCard.getResult());
-        System.out.println("地址：" + identityCard.getAddress());
-        System.out.println("订单编号：" + identityCard.getOrderNo());
-        System.out.println("性别：" + identityCard.getSex());
-        System.out.println("desc：" + identityCard.getDesc());*/
-        /*final Integer sms = remoteClient.sendSms("13970095229");
-        System.out.println("验证码为：" + sms);*/
-        /*String chat = remoteClient.getAiChat("帮我用java写一个快速排序");
-        System.out.println(chat);*/
-        /*ImgCaptcha imgCaptcha = remoteClient.getImgCaptcha(5);
-        System.out.println("验证码为：" + imgCaptcha.getCaptchaText());
-        System.out.println("路径为：" + imgCaptcha.getCaptchaUrl());*/
-        /*String code = remoteClient.sendSmtp("2765314967@qq.com");
-        System.out.println("收到的邮箱验证码为：" + code);*/
-        //int result = remoteClient.SensitiveFilter("你好");
-        //result：1：合规，2：不合规，3：疑似，4：审核失败，-1：api调用失败
+        /*final RemoteClient remoteClient = new RemoteClient(null, null, null);
+        final String chat = remoteClient.getAiChat("你好");*/
     }
 }
