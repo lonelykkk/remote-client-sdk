@@ -45,6 +45,12 @@ public class RemoteClient {
     private String qq;
     private String qqMailCode;
 
+    /**
+     * QQ邮箱自定义内容发送
+     * @param apiCode
+     * @param qq
+     * @param qqMailCode
+     */
     public RemoteClient(String apiCode, String qq, String qqMailCode) {
         if (StringUtils.hasText(apiCode)) {
             this.apiCode = ALIYUN_API_CODE;
