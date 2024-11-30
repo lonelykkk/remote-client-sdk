@@ -373,9 +373,4 @@ public class RemoteClient {
         }
         return flag;
     }
-
-    public static void main(String[] args) throws Exception {
-        /*final RemoteClient remoteClient = new RemoteClient(null, null, null);
-        final String chat = remoteClient.getAiChat("你好");*/
-    }
 }
