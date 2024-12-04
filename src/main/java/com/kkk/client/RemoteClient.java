@@ -9,6 +9,7 @@ import com.kkk.domain.entity.IdentityCard;
 import com.kkk.domain.entity.ImgCaptcha;
 import com.kkk.service.RemoteClientService;
 import com.kkk.utils.HttpUtils;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.apache.commons.mail.HtmlEmail;
 import org.apache.http.HttpResponse;
@@ -39,6 +40,7 @@ import static com.kkk.key.ApiKey.*;
  * @date 2024/10/27 11:03
  * @Version V1.0
  */
+@Slf4j
 public class RemoteClient {
 
     private String apiCode;
@@ -46,7 +48,7 @@ public class RemoteClient {
     private String qqMailCode;
 
     /**
-     * QQ邮箱自定义内容发送
+     * 构造器
      * @param apiCode
      * @param qq
      * @param qqMailCode
@@ -133,7 +135,8 @@ public class RemoteClient {
                 return null;
             }
         } catch (Exception e) {
-            throw new RuntimeException();
+            log.error("GPT接口调用失败");
+            throw new RuntimeException("GPT接口调用失败");
         }
     }
 
@@ -311,7 +314,7 @@ public class RemoteClient {
     }
 
     /**
-     * 发送邮箱
+     * 发送邮箱,自定义邮箱内容
      * @param to 接收人
      * @param topic 自定义邮件主题
      * @param content 邮件内容
@@ -372,5 +375,11 @@ public class RemoteClient {
             e.printStackTrace();
         }
         return flag;
+    }
+
+    public static void main(String[] args) {
+        RemoteClient remoteClient = new RemoteClient(null, null, null);
+        String chat = remoteClient.getAiChat("帮我用java写一个快速排序");
+        System.out.println(chat);
     }
 }
