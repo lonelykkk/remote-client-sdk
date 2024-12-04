@@ -12,4 +12,6 @@ public class ApiKey {
     public static final String SMTP_FROM_QQ = "2765314967@qq.com";
     public static final String MAIL_API_CODE = "crwompcjwdxbdcie";
     public static final String OPEN_AI_GPT_KEY = "hk-l0ik8q100004543128fa47fb2113ad7a48be4de270945998";
+
+    public static final String POWER_AI_CHAT_KEY = "sk-7SqUSTDEmQ8SNmj1q512IEveqwu9HHBRWqe9g6RdgTsW5CX4";
 }

@@ -3,10 +3,14 @@ package com.kkk.client;
 import cn.hutool.json.JSONObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.kkk.constant.CodeConstant;
 import com.kkk.domain.entity.HourWeatherList;
 import com.kkk.domain.entity.IdentityCard;
 import com.kkk.domain.entity.ImgCaptcha;
+import com.kkk.domain.enums.PowerChatEnum;
 import com.kkk.service.RemoteClientService;
 import com.kkk.utils.HttpUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -19,9 +23,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -141,12 +145,97 @@ public class RemoteClient {
     }
 
     /**
+     * 增强GPT模型，支持gpt-3.5-turbo, gpt-4o-mini, gpt-4。其中gpt-4由于价格过高，每天限制3次调用
+     * @param msg 输入你需要问的问题
+     * @param version 输入你需要调用的模型，其中 0：gpt-3.5-turbo, 1: gpt-4o-mini 3: gpt-4
+     * @return 返回AI回答的问题
+     */
+    public String getPowerAiChat(String msg,Integer version) {
+        String content = "";
+        String model = PowerChatEnum.getByVersion(version).getModel();
+        try {
+            // 创建messages数组
+            JsonArray messages = new JsonArray();
+            JsonObject systemMessage = new JsonObject();
+            systemMessage.addProperty("role", "system");
+            systemMessage.addProperty("content", "You are a helpful assistant.");
+            messages.add(systemMessage);
+
+            JsonObject userMessage = new JsonObject();
+            userMessage.addProperty("role", "user");
+            userMessage.addProperty("content", msg); //此处输入你的问题
+            messages.add(userMessage);
+
+            // 创建请求体
+            JsonObject requestBody = new JsonObject();
+            requestBody.addProperty("model", model);
+            requestBody.add("messages", messages);
+
+            // 创建URL和HttpURLConnection
+            URL obj = new URL(POWER_AI_CHAT_URL);
+            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+            con.setRequestMethod("POST");
+
+            // 设置请求头
+            con.setRequestProperty("Authorization", "Bearer " + POWER_AI_CHAT_KEY);
+            con.setRequestProperty("Content-Type", "application/json");
+            con.setDoOutput(true);
+
+            // 写入请求体
+            try (OutputStream os = con.getOutputStream()) {
+                byte[] input = requestBody.toString().getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+
+            // 读取响应
+            int responseCode = con.getResponseCode();
+            if (responseCode != 200) {
+                log.error("GPT接口调用失败，请联系我们");
+            }
+
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"))) {
+                StringBuilder response = new StringBuilder();
+                String responseLine;
+                while ((responseLine = br.readLine()) != null) {
+                    response.append(responseLine.trim());
+                }
+
+
+                // 解析JSON字符串为JsonObject
+                JsonObject jsonObject = new Gson().fromJson(response.toString(), JsonObject.class);
+
+                // 获取"choices"数组
+                JsonArray choices = jsonObject.getAsJsonArray("choices");
+
+                if (choices != null && choices.size() > 0) {
+                    // 获取第一个选择
+                    JsonObject firstChoice = choices.get(0).getAsJsonObject();
+
+                    if (firstChoice != null) {
+                        // 获取"message"对象
+                        JsonObject message = firstChoice.getAsJsonObject("message");
+
+                        if (message != null) {
+                            // 提取"content"值
+                            content = message.get("content").getAsString();
+                        }
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return content;
+    }
+
+    /**
      * GPT远程调用接口
      *
      * @param msg 出入你的问题
      * @return
      */
-    public String getAiChat(String msg) {
+    public String getLowerAiChat(String msg) {
         try {
 
             OkHttpClient client = new OkHttpClient();
@@ -377,9 +466,9 @@ public class RemoteClient {
         return flag;
     }
 
-    public static void main(String[] args) {
+/*    public static void main(String[] args) {
         RemoteClient remoteClient = new RemoteClient(null, null, null);
-        String chat = remoteClient.getAiChat("帮我用java写一个快速排序");
+        String chat = remoteClient.getPowerAiChat("你是什么模型",3);
         System.out.println(chat);
-    }
+    }*/
 }
