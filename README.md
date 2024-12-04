@@ -1,4 +1,6 @@
 # remote-client-sdk
+* 一行代码调用各类api，包括多种gpt模型，如ChatGpt3.5, gpt-3.5-turbo, gpt-4o-mini, gpt-4 等多种模型，
+天气查询，敏感词过滤，英汉互译，二维码生成，短信验证，qq邮箱验证,图形验证码生成等等多种api
 ## 目录
 
 - [概述](#概述)
