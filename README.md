@@ -137,6 +137,7 @@ public class Test {
 ### 2.ChatAI模型加强
 > 接口描述
 > 新增0：gpt-3.5-turbo, 1：gpt-4o-mini 3：gpt-4 三种模型
+> 不选择版本默认为 gpt-4o-mini 模型
 
 ```java
     @Test
