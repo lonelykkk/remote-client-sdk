@@ -1,21 +1,31 @@
 package com.kkk.service;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.kkk.client.RemoteClient;
 import com.kkk.domain.entity.ImgCaptcha;
+import com.kkk.domain.enums.PowerChatEnum;
 import com.kkk.utils.HttpUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
 import static com.kkk.constant.ImgCaptchaConstant.*;
+import static com.kkk.constant.RemoteConstant.POWER_AI_CHAT_URL;
+import static com.kkk.key.ApiKey.POWER_AI_CHAT_KEY;
 
 /**
  * @author lonelykkk
@@ -25,6 +35,7 @@ import static com.kkk.constant.ImgCaptchaConstant.*;
  */
 public class RemoteClientService {
     private static final int CHAR_COUNT = 5; // 验证码字符个数
+    private static final Logger log = LoggerFactory.getLogger(RemoteClientService.class);
 
     /**
      * 发送短信服务
@@ -140,6 +151,11 @@ public class RemoteClientService {
         return image;
     }
 
+    /**
+     * gpt远程接口调用参数
+     * @param msg
+     * @return
+     */
     public String getGptKey(String msg) {
         String json = "{\n" +
                 "  \"max_tokens\": 1200,\n" +
@@ -162,6 +178,11 @@ public class RemoteClientService {
 
     }
 
+    /**
+     * 默认邮件内容
+     * @param code
+     * @return
+     */
     public String getEmailHtml(String code) {
         String content = "<!DOCTYPE html>\n" +
                 "<html lang=\"zh-CN\">\n" +
@@ -233,4 +254,88 @@ public class RemoteClientService {
         return content;
     }
 
+    /**
+     * gpt远程接口调用二次封装
+     * @param msg
+     * @param version
+     * @return
+     */
+    public String getPowerAiChat(String msg, Integer version) {
+        String content = "";
+        String model = PowerChatEnum.getByVersion(version).getModel();
+        try {
+            // 创建messages数组
+            JsonArray messages = new JsonArray();
+            JsonObject systemMessage = new JsonObject();
+            systemMessage.addProperty("role", "system");
+            systemMessage.addProperty("content", "You are a helpful assistant.");
+            messages.add(systemMessage);
+
+            JsonObject userMessage = new JsonObject();
+            userMessage.addProperty("role", "user");
+            userMessage.addProperty("content", msg); //此处输入你的问题
+            messages.add(userMessage);
+
+            // 创建请求体
+            JsonObject requestBody = new JsonObject();
+            requestBody.addProperty("model", model);
+            requestBody.add("messages", messages);
+
+            // 创建URL和HttpURLConnection
+            URL obj = new URL(POWER_AI_CHAT_URL);
+            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+            con.setRequestMethod("POST");
+
+            // 设置请求头
+            con.setRequestProperty("Authorization", "Bearer " + POWER_AI_CHAT_KEY);
+            con.setRequestProperty("Content-Type", "application/json");
+            con.setDoOutput(true);
+
+            // 写入请求体
+            try (OutputStream os = con.getOutputStream()) {
+                byte[] input = requestBody.toString().getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+
+            // 读取响应
+            int responseCode = con.getResponseCode();
+            if (responseCode != 200) {
+                log.error("GPT接口调用失败，请联系我们");
+            }
+
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"))) {
+                StringBuilder response = new StringBuilder();
+                String responseLine;
+                while ((responseLine = br.readLine()) != null) {
+                    response.append(responseLine.trim());
+                }
+
+
+                // 解析JSON字符串为JsonObject
+                JsonObject jsonObject = new Gson().fromJson(response.toString(), JsonObject.class);
+
+                // 获取"choices"数组
+                JsonArray choices = jsonObject.getAsJsonArray("choices");
+
+                if (choices != null && choices.size() > 0) {
+                    // 获取第一个选择
+                    JsonObject firstChoice = choices.get(0).getAsJsonObject();
+
+                    if (firstChoice != null) {
+                        // 获取"message"对象
+                        JsonObject message = firstChoice.getAsJsonObject("message");
+
+                        if (message != null) {
+                            // 提取"content"值
+                            content = message.get("content").getAsString();
+                        }
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return content;
+    }
 }
