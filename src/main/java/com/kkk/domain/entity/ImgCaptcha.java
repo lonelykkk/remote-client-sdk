@@ -1,8 +1,5 @@
 package com.kkk.domain.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * @author lonelykkk
@@ -10,10 +7,32 @@ import lombok.NoArgsConstructor;
  * @date 2024/11/1 19:35
  * @Version V1.0
  */
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+
 public class ImgCaptcha {
     private String captchaText;
     private String captchaUrl;
+
+    public ImgCaptcha(String captchaText, String captchaUrl) {
+        this.captchaText = captchaText;
+        this.captchaUrl = captchaUrl;
+    }
+
+    public ImgCaptcha() {
+    }
+
+    public String getCaptchaText() {
+        return captchaText;
+    }
+
+    public void setCaptchaText(String captchaText) {
+        this.captchaText = captchaText;
+    }
+
+    public String getCaptchaUrl() {
+        return captchaUrl;
+    }
+
+    public void setCaptchaUrl(String captchaUrl) {
+        this.captchaUrl = captchaUrl;
+    }
 }
