@@ -7,7 +7,7 @@
 - [特性](#特性)
 - [快速开始](#快速开始)
   - [环境要求](#环境要求)
-- [API增量模型(1.0.2版本)](#api增量模型102版本较上一版封装性更好新增部分api加强扩展性)
+- [API增量模型(1.0.3版本)](#api增量模型103版本较上一版封装性更好新增部分api加强扩展性)
   - [版本概述](#版本概述)
   - [快速入门](#快速入门)
   - [1. ChatGPT 3.5模型接口调用](#1chatgpt35模型接口调用)
@@ -63,7 +63,7 @@ remote-client-sdk是一个高性能、可扩展、专门用来提供第三方远
 * Maven 3.6.0或更高版本
 * SpringBoot 2.X 版本
 
-## api增量模型(1.0.2版本，较上一版封装性更好，新增部分api，加强扩展性)
+## api增量模型(1.0.3版本，较上一版封装性更好，新增部分api，加强扩展性)
 
 ### 版本概述
 
@@ -77,7 +77,7 @@ remote-client-sdk是一个高性能、可扩展、专门用来提供第三方远
  <dependency>
       <groupId>io.github.lonelykkk</groupId>
       <artifactId>remote-client-sdk</artifactId>
-      <version>1.0.2</version>
+      <version>1.0.3</version>
 </dependency>
 ```
 
@@ -137,6 +137,7 @@ public class Test {
 ### 2.ChatAI模型加强
 > 接口描述
 > 新增0：gpt-3.5-turbo, 1：gpt-4o-mini 3：gpt-4 三种模型
+> 不选择版本默认为 gpt-4o-mini 模型
 
 ```java
     @Test
