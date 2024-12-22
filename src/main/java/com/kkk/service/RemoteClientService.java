@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.kkk.client.RemoteClient;
 import com.kkk.domain.entity.ImgCaptcha;
 import com.kkk.domain.enums.PowerChatEnum;
+import com.kkk.exception.BusinessException;
 import com.kkk.utils.HttpUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
@@ -25,6 +26,7 @@ import java.util.Random;
 
 import static com.kkk.constant.ImgCaptchaConstant.*;
 import static com.kkk.constant.RemoteConstant.POWER_AI_CHAT_URL;
+import static com.kkk.domain.enums.ResponseCodeEnum.CHAT_GPT_ERROR;
 import static com.kkk.key.ApiKey.POWER_AI_CHAT_KEY;
 
 /**
@@ -334,7 +336,7 @@ public class RemoteClientService {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new BusinessException(CHAT_GPT_ERROR);
         }
         return content;
     }

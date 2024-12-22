@@ -3,9 +3,6 @@ package com.kkk.client;
 import cn.hutool.json.JSONObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.kkk.constant.CodeConstant;
 import com.kkk.domain.entity.HourWeatherList;
 import com.kkk.domain.entity.IdentityCard;
@@ -24,9 +21,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
+
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -97,6 +93,10 @@ public class RemoteClient {
         } catch (Exception e) {
             throw new RuntimeException();
         }
+    }
+
+    public void ParsingQRCodes(String url) {
+
     }
 
     /**
@@ -400,10 +400,8 @@ public class RemoteClient {
         return flag;
     }
 
+
     public static void main(String[] args) {
-        RemoteClient remoteClient = new RemoteClient(null, null, null);
-        //remoteClient.getLowerAiChat("帮我介绍一下java快速排序");
-        String chat = remoteClient.getPowerAiChat("鲁迅vs周树人");
-        System.out.println(chat);
+
     }
 }
