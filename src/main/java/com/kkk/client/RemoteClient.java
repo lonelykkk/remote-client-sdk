@@ -49,11 +49,14 @@ public class RemoteClient {
 
     /**
      * 构造器
+     *
      * @param apiCode
      * @param qq
      * @param qqMailCode
+     * @param GPTCode
      */
-    public RemoteClient(String apiCode, String qq, String qqMailCode) {
+    // TODO 封装gpt秘钥
+    public RemoteClient(String apiCode, String qq, String qqMailCode, String GPTCode) {
         if (StringUtils.hasText(apiCode)) {
             this.apiCode = ALIYUN_API_CODE;
         } else {

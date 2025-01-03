@@ -19,10 +19,11 @@ public class KeyConfig {
     private String apiCode;
     private String qq;
     private String qqMailCode;
+    private String GPTCode;
 
     @Bean
     public RemoteClient remoteClient() {
-        return new RemoteClient(apiCode, qq, qqMailCode);
+        return new RemoteClient(apiCode, qq, qqMailCode,GPTCode);
     }
 
     public String getApiCode() {
