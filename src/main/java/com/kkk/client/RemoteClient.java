@@ -69,6 +69,9 @@ public class RemoteClient {
             this.qq = qq;
             this.qqMailCode = qqMailCode;
         }
+        if (GPTCode == null) {
+
+        }
     }
 
     RestTemplate restTemplate = new RestTemplate();
