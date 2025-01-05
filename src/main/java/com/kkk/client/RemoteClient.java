@@ -70,7 +70,7 @@ public class RemoteClient {
             this.qqMailCode = qqMailCode;
         }
         if (GPTCode == null) {
-
+            GPTCode = POWER_AI_CHAT_KEY;
         }
     }
 
