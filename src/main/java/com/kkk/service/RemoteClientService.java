@@ -262,7 +262,7 @@ public class RemoteClientService {
      * @param version
      * @return
      */
-    public String getPowerAiChat(String msg, Integer version) {
+    public String getPowerAiChat(String msg, Integer version,String GPTCode) {
         String content = "";
         String model = PowerChatEnum.getByVersion(version).getModel();
         try {
@@ -289,7 +289,7 @@ public class RemoteClientService {
             con.setRequestMethod("POST");
 
             // 设置请求头
-            con.setRequestProperty("Authorization", "Bearer " + POWER_AI_CHAT_KEY);
+            con.setRequestProperty("Authorization", "Bearer " + GPTCode);
             con.setRequestProperty("Content-Type", "application/json");
             con.setDoOutput(true);
 

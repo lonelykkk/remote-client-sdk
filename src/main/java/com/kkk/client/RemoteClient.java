@@ -46,6 +46,7 @@ public class RemoteClient {
     private String apiCode;
     private String qq;
     private String qqMailCode;
+    private String GPTCode;
 
     /**
      * 构造器
@@ -157,7 +158,7 @@ public class RemoteClient {
      * @return 返回AI回答的问题
      */
     public String getPowerAiChat(String msg,Integer version) {
-        return remoteClientService.getPowerAiChat(msg, version);
+        return remoteClientService.getPowerAiChat(msg, version,GPTCode);
     }
 
     /**
@@ -166,7 +167,7 @@ public class RemoteClient {
      * @return 返回AI回答的问题
      */
     public String getPowerAiChat(String msg) {
-        return remoteClientService.getPowerAiChat(msg, PowerChatEnum.GPT1.getVersion());
+        return remoteClientService.getPowerAiChat(msg, PowerChatEnum.GPT1.getVersion(),GPTCode);
     }
 
     /**
