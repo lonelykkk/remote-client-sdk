@@ -102,6 +102,14 @@ public class RemoteClient {
         }
     }
 
+    /**
+     * deepseek Api调用
+     * @return
+     */
+    public String deepSeek() {
+        return null;
+    }
+
     public void ParsingQRCodes(String url) {
 
     }
