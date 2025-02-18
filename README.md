@@ -103,7 +103,7 @@ kkk:
     qq: test@qq.com # 对应发送qq邮箱stmp服务的账号
     qq-mail-code: jhdogitzipnsadichhf #对应发送qq邮箱stmp服务的秘钥
 ```
-
+> 免费获取秘钥
 > ### 快速开始
 
 ```java
