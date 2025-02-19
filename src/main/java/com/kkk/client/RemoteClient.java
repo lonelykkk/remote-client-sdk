@@ -106,7 +106,7 @@ public class RemoteClient {
      * deepseek Api调用
      * @return
      */
-    public String deepSeek() {
+    public String deepSeek(String question) {
         return null;
     }
 
