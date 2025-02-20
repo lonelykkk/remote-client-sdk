@@ -107,6 +107,9 @@ public class RemoteClient {
      * @return
      */
     public String deepSeek(String question) {
+        if (StringUtils.hasText(question)) {
+            return "";
+        }
         return null;
     }
 
