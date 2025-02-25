@@ -110,7 +110,7 @@ public class RemoteClient {
         if (StringUtils.hasText(question)) {
             return "";
         }
-        return "系统繁忙";
+        return "系统繁忙...";
     }
 
     public void ParsingQRCodes(String url) {
